@@ -6,7 +6,24 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"html/template"
 )
+
+type Todo struct {
+	Title string
+	Done  bool
+}
+
+type TodoPageData struct {
+	PageTitle string
+	Todos     []Todo
+}
+
+func templater() {
+
+	http.ListenAndServe(":80", nil)
+}
 
 type UptimeHandler struct {
 	Started time.Time
@@ -53,5 +70,19 @@ func main() {
 		next:   NewUptimeHandler(),
 		secret: "mysecret",
 	})
+
+	tmpl := template.Must(template.ParseFiles("layout.html"))
+	http.HandleFunc("/template", func(w http.ResponseWriter, r *http.Request) {
+		data := TodoPageData{
+			PageTitle: "My TODO list",
+			Todos: []Todo{
+				{Title: "Task 1", Done: false},
+				{Title: "Task 2", Done: true},
+				{Title: "Task 3", Done: true},
+			},
+		}
+		tmpl.Execute(w, data)
+	})
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
