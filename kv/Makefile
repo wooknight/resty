@@ -1,0 +1,1 @@
+protoc  .\kv\protos\speedrate.proto --go_out=kv\protos\
